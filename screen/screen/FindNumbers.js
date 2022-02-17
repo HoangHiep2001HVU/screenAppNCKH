@@ -24,19 +24,26 @@ export class LayoutNumber extends React.Component{
             this.setState({check_number: 1});
         }
         else{
+            const { navigation } = this.props;
             if(this.state.check_number==0){
-                console.log("thua")
+                // navigation.navigate("FindNumber_Notification", {
+                //     check: false
+                // })
             }
             else{
                 const check= this.state.check_number;
                 if(check==number-1){
                     this.setState({check_number: number});
                     if(number==this.state.numbers.length){
-                        console.log("win");
+                        // navigation.navigate("FindNumber_Notification", {
+                        //     check: true
+                        // })
                     }
                 }
                 else{
-                    console.log("thua");
+                    // navigation.navigate("FindNumber_Notification", {
+                    //     check: false
+                    // })
                 }
             }
         }
@@ -45,11 +52,13 @@ export class LayoutNumber extends React.Component{
     render(){
         const { fadeAnim } = this.state;
         const { item } = this.props;
-        console.log(item);
         // const arr_nb= this.arr_number(numbers);
         return(
             <Animated.View style={{opacity: fadeAnim}}>
-                <TouchableOpacity style={styles.nb} onPress={()=>this.handleClick()}>
+                <TouchableOpacity style={styles.nb} onPress={()=>{
+                    this.handleClick(),
+                    this.check(item.number)
+                }}>
                     <Text>{item.number}</Text>
                 </TouchableOpacity>
             </Animated.View>
@@ -80,7 +89,6 @@ export default class FindNumbers extends React.Component{
 
     render(){
         const { numbers, check_number , _opactity } = this.state;
-
         // const arr_nb= this.arr_number(numbers);
         return(
             <ImageBackground source={bg} style={styles.bg}>
@@ -92,7 +100,7 @@ export default class FindNumbers extends React.Component{
                         data = {numbers}
                         numColumns={5}
                         renderItem={({item}) => 
-                            <LayoutNumber item = {item} />
+                            <LayoutNumber item = {item}/>
                         }
                         keyExtractor={item => item.id}
                     />
