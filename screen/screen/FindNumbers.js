@@ -1,6 +1,61 @@
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, Animated, Easing } from "react-native";
 import bg from "../assets/bg_findnumber.jpg";
+
+export class LayoutNumber extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            fadeAnim: new Animated.Value(1),
+        }
+    }
+
+    handleClick() {
+    
+        Animated.timing(this.state.fadeAnim, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true
+        }).start();
+    }
+
+    check(number){
+        if(number==1){
+            this.setState({check_number: 1});
+        }
+        else{
+            if(this.state.check_number==0){
+                console.log("thua")
+            }
+            else{
+                const check= this.state.check_number;
+                if(check==number-1){
+                    this.setState({check_number: number});
+                    if(number==this.state.numbers.length){
+                        console.log("win");
+                    }
+                }
+                else{
+                    console.log("thua");
+                }
+            }
+        }
+    }
+
+    render(){
+        const { fadeAnim } = this.state;
+        const { item } = this.props;
+        console.log(item);
+        // const arr_nb= this.arr_number(numbers);
+        return(
+            <Animated.View style={{opacity: fadeAnim}}>
+                <TouchableOpacity style={styles.nb} onPress={()=>this.handleClick()}>
+                    <Text>{item.number}</Text>
+                </TouchableOpacity>
+            </Animated.View>
+        );
+    }
+}
 
 export default class FindNumbers extends React.Component{
 
@@ -8,43 +63,36 @@ export default class FindNumbers extends React.Component{
         super(props);
         this.state ={
             numbers: [],
-            check_number: 0
+            check_number: 0,
         };
     }
 
     componentDidMount(){
-        const max = 10;
+        const max = 30;
         const arr_number= [];
         for(let i= 1; i<=max; i++){
             const arr = {id: i, number: i};
             arr_number.push(arr);
         }
-        this.setState({numbers: arr_number});
-    }
-
-    arr_number(list){
-        const arr=[];
-        arr.push(list.sort(() => Math.random() - 0.5));
-        return arr;
-    }
-
-    check(number){
-       
+        const arr = arr_number.sort(() => Math.random() - 0.5);
+        this.setState({numbers: arr});
     }
 
     render(){
-        const { numbers } = this.state;
-        const arr_nb= this.arr_number(numbers);
+        const { numbers, check_number , _opactity } = this.state;
+
+        // const arr_nb= this.arr_number(numbers);
         return(
             <ImageBackground source={bg} style={styles.bg}>
+                <View style={styles.title}>
+
+                </View>
                 <View style={styles.container}>
                     <FlatList
                         data = {numbers}
                         numColumns={5}
                         renderItem={({item}) => 
-                            <TouchableOpacity style={styles.nb}>
-                                <Text style={styles.txt}>{item.number}</Text>
-                            </TouchableOpacity>
+                            <LayoutNumber item = {item} />
                         }
                         keyExtractor={item => item.id}
                     />
@@ -75,8 +123,6 @@ const styles= StyleSheet.create({
         borderRadius: 25,
         borderColor: "#fff",
         borderWidth: 3,
-    },
-    txt: {
         fontSize: 24,
-    },
+    }
 });
