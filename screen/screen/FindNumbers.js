@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, FlatList, TouchableOpacity, ImageBackground, StyleSheet, Animated, Easing } from "react-native";
 import bg from "../assets/bg_findnumber.jpg";
 
+global.count = 0;
 export class LayoutNumber extends React.Component{
     constructor(props){
         super(props);
@@ -21,32 +22,33 @@ export class LayoutNumber extends React.Component{
 
     check(number){
         if(number==1){
-            this.setState({check_number: 1});
+            count =1;
         }
         else{
             const { navigation } = this.props;
-            if(this.state.check_number==0){
-                // navigation.navigate("FindNumber_Notification", {
-                //     check: false
-                // })
+            if(count==0){
+                navigation.navigate("FindNumber_Notification", {
+                    check_nb: false
+                })
             }
             else{
-                const check= this.state.check_number;
-                if(check==number-1){
-                    this.setState({check_number: number});
-                    if(number==this.state.numbers.length){
-                        // navigation.navigate("FindNumber_Notification", {
-                        //     check: true
-                        // })
+                if(count==(number-1)){
+                    count=number;
+                    if(count==this.props.max){
+                        navigation.navigate("FindNumber_Notification", {
+                            check_nb: true
+                        })
                     }
                 }
                 else{
-                    // navigation.navigate("FindNumber_Notification", {
-                    //     check: false
-                    // })
+                    navigation.navigate("FindNumber_Notification", {
+                        check_nb: false
+                    })
                 }
             }
         }
+
+        console.log("nb: " + number + " count: " + count);
     }
 
     render(){
@@ -72,12 +74,11 @@ export default class FindNumbers extends React.Component{
         super(props);
         this.state ={
             numbers: [],
-            check_number: 0,
         };
     }
 
     componentDidMount(){
-        const max = 30;
+        const max = 5;
         const arr_number= [];
         for(let i= 1; i<=max; i++){
             const arr = {id: i, number: i};
@@ -100,7 +101,7 @@ export default class FindNumbers extends React.Component{
                         data = {numbers}
                         numColumns={5}
                         renderItem={({item}) => 
-                            <LayoutNumber item = {item}/>
+                            <LayoutNumber max={this.state.numbers.length} item = {item} navigation={this.props.navigation}/>
                         }
                         keyExtractor={item => item.id}
                     />
